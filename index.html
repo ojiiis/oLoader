@@ -1,0 +1,82 @@
+const App = (root) => {
+    const rootElem = document.getElementById(root);
+
+    if (!rootElem) {
+        console.error("Root element not found");
+        return;
+    }
+
+    // Ensure <head> and <body> exist
+    let head = rootElem.getElementsByTagName("head")[0];
+    let body = rootElem.getElementsByTagName("body")[0];
+
+    if (!head) {
+        head = document.createElement("head");
+        rootElem.appendChild(head);
+    }
+
+    if (!body) {
+        body = document.createElement("body");
+        rootElem.appendChild(body);
+    }
+
+    const loadFile = async (file, target) => {
+        try {
+            const req = await fetch(file);
+            if (!req.ok) throw new Error(`HTTP error! Status: ${req.status}`);
+            const res = await req.text();
+
+            // Create a temporary div to extract scripts
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = res;
+
+            // Extract all <script> elements
+            const scripts = tempDiv.getElementsByTagName("script");
+
+            // Append non-script content first
+            target.insertAdjacentHTML("beforeend", tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, ""));
+
+            // Process scripts separately
+            for (let script of scripts) {
+                const newScript = document.createElement("script");
+
+                if (script.src) {
+                    // External script
+                    newScript.src = script.src;
+                    newScript.async = false;
+                } else {
+                    // Inline script
+                    newScript.textContent = script.textContent;
+                }
+
+                body.appendChild(newScript);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const instance = {
+        head(file) {
+            loadFile(file, head);
+            return instance;
+        },
+        body(file) {
+            loadFile(file, body);
+            return instance;
+        },
+        script(file) {
+            loadFile(file, body);
+            return instance;
+        },
+        run(func) {
+            if (typeof func === "function") {
+                func();
+            }
+        }
+    };
+
+    return instance;
+};
+
+
