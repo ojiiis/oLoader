@@ -23,7 +23,7 @@ You can use oLoader via a CDN:
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="app">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +31,7 @@ You can use oLoader via a CDN:
     <script src="https://ojiiis.github.io/oLoader/"></script>
 </head>
 <body>
-    <div id="app"></div>
+    
 
     <script>
         App("app")
