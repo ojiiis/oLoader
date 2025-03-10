@@ -44,3 +44,25 @@ You can use oLoader via a CDN:
 </body>
 </html>
 ```
+
+
+## 📖 Explanation
+
+- **`head(file)`** – Loads an HTML file into the `<head>`.
+- **`body(file)`** – Loads an HTML file into the `<body>`.
+- **`script(file)`** – Loads and executes scripts properly (both inline and external).
+- **`run(callback)`** – Runs a final callback after all content is loaded.
+
+## 🎯 Why Use oLoader?
+
+- **For Static Sites** – Dynamically load page sections without reloading.
+- **For MPAs (Multi-Page Applications)** – Handle partial updates efficiently.
+- **For Lightweight Projects** – Avoids complexity from larger frameworks.
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+Developed by **[Ojingiri Samuel](https://github.com/ojiiis)**.
