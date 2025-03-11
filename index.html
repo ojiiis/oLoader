@@ -4,7 +4,7 @@ const oLoader = () => {
 
     const queue = []; // Store async functions in a queue
 
-    const loadFile = (file, target) => {
+    const loadFile = (file, target,type = "") => {
         queue.push(() => 
             fetch(file)
                 .then((req) => {
@@ -20,10 +20,23 @@ const oLoader = () => {
                     const scripts = tempDiv.getElementsByTagName("script");
 
                     // Append non-script content first
-                    target.insertAdjacentHTML(
+                  switch(type){
+                                case "script":
+                                const newScript = document.createElement("script");
+                                newScript.innerHTML = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "");
+                                newScript.async = false; 
+                               target.insertAdjacentHTML(
+                        "beforeend",
+                        newScript
+                    );
+                                break;
+                                default:
+                            target.insertAdjacentHTML(
                         "beforeend",
                         tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "")
                     );
+                            }
+                    
 
                     // Process scripts separately
                     for (let script of scripts) {
@@ -32,7 +45,16 @@ const oLoader = () => {
                             newScript.src = script.src;
                             newScript.async = false; // Maintain execution order
                         } else {
+                            
+                            switch(type){
+                                case "script":
+                                newScript.innerHTML = script.src;
+                                newScript.async = false; 
+                                break;
+                                default:
                             newScript.textContent = script.textContent;
+                            }
+                            
                         }
                         body.appendChild(newScript);
                     }
@@ -51,7 +73,7 @@ const oLoader = () => {
             return instance;
         },
         script(file) {
-            loadFile(file, body);
+            loadFile(file, body,"script");
             return instance;
         },
         load(callback = null) {
