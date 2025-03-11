@@ -23,7 +23,7 @@ const oLoader = () => {
                   switch(type){
                                 case "script":
                                 const newScript = document.createElement("script");
-                                newScript.innerHTML = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "");
+                                newScript.textContent = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "");
                                 newScript.async = false; 
                                 target.appendChild(newScript);
                 
@@ -46,7 +46,7 @@ const oLoader = () => {
                             
                             switch(type){
                                 case "script":
-                                newScript.innerHTML = script.src;
+                                newScript.textContent = script.src;
                                 newScript.async = false; 
                                 break;
                                 default:
