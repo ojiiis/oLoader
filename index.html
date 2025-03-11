@@ -25,10 +25,8 @@ const oLoader = () => {
                                 const newScript = document.createElement("script");
                                 newScript.innerHTML = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "");
                                 newScript.async = false; 
-                               target.insertAdjacentHTML(
-                        "beforeend",
-                        newScript
-                    );
+                                target.appendChild(newScript);
+                
                                 break;
                                 default:
                             target.insertAdjacentHTML(
