@@ -34,12 +34,12 @@ You can use oLoader via a CDN:
     
 
     <script>
-        App("app")
+        App()
             .head("header.html")
             .body("content.html")
             .body("footer.html")
             .script("script.js")
-            .run(() => console.log("All content loaded!"));
+            .load(() => console.log("All content loaded!"));
     </script>
 </body>
 </html>
@@ -51,7 +51,7 @@ You can use oLoader via a CDN:
 - **`head(file)`** – Loads an HTML file into the `<head>`.
 - **`body(file)`** – Loads an HTML file into the `<body>`.
 - **`script(file)`** – Loads and executes scripts properly (both inline and external).
-- **`run(callback)`** – Runs a final callback after all content is loaded.
+- **`load(callback)`** – Load all content and Runs a final callback after all content is loaded (call back argument is optional).
 
 ## 🎯 Why Use oLoader?
 

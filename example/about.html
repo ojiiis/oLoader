@@ -5,18 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>oLoader Example</title>
-    <script src="https://ojiiis.github.io/oLoader/"></script>
+    <script src="../index.js"></script>
 </head>
 <body>
     
 
  <script>
-        App()
+        const app = App()
             .body("header.html")
-            .body("./pages/contact.html")
+            .body("./pages/about.html")
             .body("footer.html")
-            .script("script.html")
-            .run(() => console.log("All content loaded!"));
+            .script("script.html");
+        app.load(() => console.log("All content loaded!"));
     </script>
 </body>
 </html>

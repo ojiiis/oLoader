@@ -1,60 +1,70 @@
-const App =  (id=null) => {
-  
+const App = () => {
     const head = document.head;
     const body = document.body;
 
-    const loadFile = async (file, target) => {
-        try {
-            const req = await fetch(file);
-            if (!req.ok) throw new Error(`HTTP error! Status: ${req.status}`);
-            const res = await req.text();
+    const queue = []; // Store async functions in a queue
 
-            // Create a temporary div to extract scripts
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = res;
+    const loadFile = (file, target) => {
+        queue.push(() => 
+            fetch(file)
+                .then((req) => {
+                    if (!req.ok) throw new Error(`HTTP error! Status: ${req.status}`);
+                    return req.text();
+                })
+                .then((res) => {
+                    // Create a temporary div to extract scripts
+                    const tempDiv = document.createElement("div");
+                    tempDiv.innerHTML = res;
 
-            // Extract all <script> elements
-            const scripts = tempDiv.getElementsByTagName("script");
+                    // Extract all <script> elements
+                    const scripts = tempDiv.getElementsByTagName("script");
 
-            // Append non-script content first
-            target.insertAdjacentHTML("beforeend", tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, ""));
+                    // Append non-script content first
+                    target.insertAdjacentHTML(
+                        "beforeend",
+                        tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "")
+                    );
 
-            // Process scripts separately
-            for (let script of scripts) {
-                const newScript = document.createElement("script");
-                if (script.src) {
-                    newScript.src = script.src;
-                    newScript.async = false; // Maintain execution order
-                } else {
-                    newScript.textContent = script.textContent;
-                }
-                body.appendChild(newScript);
-            }
-        } catch (e) {
-            console.error(e);
-        }
+                    // Process scripts separately
+                    for (let script of scripts) {
+                        const newScript = document.createElement("script");
+                        if (script.src) {
+                            newScript.src = script.src;
+                            newScript.async = false; // Maintain execution order
+                        } else {
+                            newScript.textContent = script.textContent;
+                        }
+                        body.appendChild(newScript);
+                    }
+                })
+                .catch((e) => console.error(`Error loading ${file}:`, e))
+        );
     };
 
     const instance = {
-        async head(file) {
-            await loadFile(file, head);
+        head(file) {
+            loadFile(file, head);
+            return instance; // Allow chaining
+        },
+        body(file) {
+            loadFile(file, body);
             return instance;
         },
-        async body(file) {
-            await loadFile(file, body);
+        script(file) {
+            loadFile(file, body);
             return instance;
         },
-        async script(file) {
-            await loadFile(file, body);
-            return instance;
-        },
-        run(func) {
-            if (typeof func === "function") {
-                func();
-            }
+        load(callback = null) {
+            // Execute tasks in sequence (one by one)
+            const executeQueue = async () => {
+                for (const task of queue) {
+                    await task();
+                }
+                if (typeof callback === "function") callback();
+            };
+            executeQueue();
         }
     };
 
     return instance;
 };
-                
