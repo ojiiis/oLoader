@@ -1,10 +1,9 @@
 const oLoader = () => {
     const head = document.head;
     const body = document.body;
+    const queue = [];
 
-    const queue = []; // Store async functions in a queue
-
-    const loadFile = (file, target,type = "") => {
+    const loadFile = (file, target, type = "") => {
         queue.push(() => 
             fetch(file)
                 .then((req) => {
@@ -12,47 +11,26 @@ const oLoader = () => {
                     return req.text();
                 })
                 .then((res) => {
-                    // Create a temporary div to extract scripts
                     const tempDiv = document.createElement("div");
                     tempDiv.innerHTML = res;
-
-                    // Extract all <script> elements
                     const scripts = tempDiv.getElementsByTagName("script");
 
-                    // Append non-script content first
-                  switch(type){
-                                case "script":
-                                const newScript = document.createElement("script");
-                                newScript.textContent = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "");
-                                newScript.async = false; 
-                                target.appendChild(newScript);
-                
-                                break;
-                                default:
-                            target.insertAdjacentHTML(
-                        "beforeend",
-                        tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "")
-                    );
-                            }
-                    
+                    if (type === "script") {
+                        const newScript = document.createElement("script");
+                        newScript.textContent = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, "");
+                        newScript.async = false;
+                        target.appendChild(newScript);
+                    } else {
+                        target.insertAdjacentHTML("beforeend", tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, ""));
+                    }
 
-                    // Process scripts separately
                     for (let script of scripts) {
                         const newScript = document.createElement("script");
                         if (script.src) {
                             newScript.src = script.src;
-                            newScript.async = false; // Maintain execution order
+                            newScript.async = false;
                         } else {
-                            
-                            switch(type){
-                                case "script":
-                                newScript.textContent = script.src;
-                                newScript.async = false; 
-                                break;
-                                default:
                             newScript.textContent = script.textContent;
-                            }
-                            
                         }
                         body.appendChild(newScript);
                     }
@@ -64,18 +42,17 @@ const oLoader = () => {
     const instance = {
         head(file) {
             loadFile(file, head);
-            return instance; // Allow chaining
+            return instance;
         },
         body(file) {
             loadFile(file, body);
             return instance;
         },
         script(file) {
-            loadFile(file, body,"script");
+            loadFile(file, body, "script");
             return instance;
         },
         load(callback = null) {
-            // Execute tasks in sequence (one by one)
             const executeQueue = async () => {
                 for (const task of queue) {
                     await task();
