@@ -34,12 +34,15 @@ You can use oLoader via a CDN:
     
 
     <script>
-        App()
-            .head("header.html")
-            .body("content.html")
-            .body("footer.html")
-            .script("script.js")
-            .load(() => console.log("All content loaded!"));
+       const app = oLoader();  // Instantiate oLoader
+        
+        app.head("head.html"); // Dynamically load content into the <head> section
+        app.body("header.html"); // Dynamically load content into the <body> section
+        app.body("content.html"); // Dynamically load content into the <body> section
+        app.body("footer.html"); // Dynamically load content into the <body> section
+        app.script("script.js"); // Dynamically load and execute a script
+        
+        app.load(() => console.log("All content loaded!")); // Execute all queued loading operations (callback is optional)
     </script>
 </body>
 </html>
