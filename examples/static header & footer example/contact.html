@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oLoader Example</title>
+    <script src="https://ojiiis.github.io/oLoader"></script>
+</head>
+<body>
+    
+
+<script>
+            const doc = oLoader();
+            doc.body("./global/header.html");
+            doc.body("./pages/contact.html");
+            doc.body("./global/footer.html");
+            doc.script("./global/script.html");
+            doc.load(() => console.log("All content loaded!"));
+</script>
+</body>
+</html>
+
