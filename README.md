@@ -1,71 +1,99 @@
 # oLoader
 
-**oLoader** is a lightweight JavaScript framework for dynamically loading HTML content and scripts into a webpage. It provides a clean, chainable API for loading content into the `<head>` and `<body>` without reloading the page.
+**oLoader** is a lightweight JavaScript framework for dynamically loading HTML, CSS, and JavaScript files into a webpage. It allows developers to insert content into the `<head>` or `<body>` with control over placement while ensuring scripts execute correctly.
 
-## 🚀 Features
+## ✨ Features
 
-- ✅ **Dynamic Content Loading** – Load HTML files into specific parts of the page.
-- ✅ **Script Handling** – Supports inline and external scripts.
-- ✅ **Non-Destructive DOM Manipulation** – Does not remove existing `<head>` and `<body>`.
-- ✅ **Minimal & Fast** – Uses vanilla JavaScript with no dependencies.
-- ✅ **Chainable API** – Simple method chaining for readability.
+- **Load HTML files dynamically** into the head or body.
+- **Insert content at the beginning or end** of a target element.
+- **Load external and inline scripts** while maintaining execution order.
+- **Chaining support** for cleaner and more readable code.
+- **Error handling mechanism** (to be added in future updates).
 
-## 📦 Installation
-
-You can use oLoader via a CDN:
-
-```html
-<script src="https://ojiiis.github.io/oLoader/"></script>
-```
-## 🔥 Usage
-
-### Basic Example
+## 🚀 Installation
+Simply include `oLoader.js` in your project:
 
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>oLoader Example</title>
-    <script src="https://ojiiis.github.io/oLoader/"></script>
-</head>
-<body>
-    
-
-    <script>
-       const app = oLoader();  // Instantiate oLoader
-        
-        app.head("head.html"); // Dynamically load content into the <head> section
-        app.body("header.html"); // Dynamically load content into the <body> section
-        app.body("content.html"); // Dynamically load content into the <body> section
-        app.body("footer.html"); // Dynamically load content into the <body> section
-        app.script("script.js"); // Dynamically load and execute a script
-        
-        app.load(() => console.log("All content loaded!")); // Execute all queued loading operations (callback is optional)
-    </script>
-</body>
-</html>
+<script src="oLoader.js"></script>
 ```
 
+Or use it as a module:
 
-## 📖 Explanation
+```js
+import oLoader from './oLoader.js';
+```
 
-- **`head(file)`** – Loads an HTML file into the `<head>`.
-- **`body(file)`** – Loads an HTML file into the `<body>`.
-- **`script(file)`** – Loads and executes scripts properly (both inline and external).
-- **`load(callback)`** – Load all content and Runs a final callback after all content is loaded (call back argument is optional).
+## 📌 Usage
+
+### Load Content into `<head>`
+
+```js
+oLoader().head('headContent.html').load();
+```
+This inserts the content from `headContent.html` into the `<head>`.
+
+### Load Content into `<body>`
+
+```js
+oLoader().body('pageContent.html').load();
+```
+This loads `pageContent.html` into the `<body>` at the end (default behavior).
+
+### Insert Content at the Beginning or End
+
+```js
+// Insert content at the beginning of body
+oLoader().body('header.html', 'b').load();
+
+// Insert content at the end of body (default behavior)
+oLoader().body('footer.html', 'e').load();
+```
+
+### Load JavaScript Files Dynamically
+
+```js
+oLoader().script('script.js').load();
+```
+This loads `script.js` and ensures it executes properly.
+
+### Chain Multiple Load Requests
+
+```js
+oLoader()
+    .head('metaTags.html')
+    .body('navbar.html', 'b')
+    .body('mainContent.html')
+    .script('app.js')
+    .load();
+```
+This ensures all assets are loaded in sequence.
+
+### Handling Errors (Upcoming Feature)
+
+```js
+oLoader().onError((file, error) => {
+    console.log(`Failed to load ${file}:`, error);
+}).body('content.html').load();
+```
 
 ## 🎯 Why Use oLoader?
 
-- **For Static Sites** – Dynamically load page sections without reloading.
-- **For MPAs (Multi-Page Applications)** – Handle partial updates efficiently.
-- **For Lightweight Projects** – Avoids complexity from larger frameworks.
+- **Lightweight & Fast** – No dependencies, just pure JavaScript.
+- **Control Content Placement** – Load HTML anywhere you need it.
+- **Automatic Script Execution** – Inline and external scripts are handled properly.
+- **Chaining Support** – Cleaner syntax for multiple load operations.
+
+## 🛠 Future Improvements
+
+- Advanced error handling with custom callbacks.
+- Support for CSS file loading.
+- Improved script execution for better performance.
 
 ## 📜 License
 
-This project is licensed under the **MIT License**.
+MIT License.
 
 ---
 
-Developed by **[Ojingiri Samuel](https://github.com/ojiiis)**.
+💡 **Contributions are welcome!** Feel free to open issues or submit pull requests.
+
