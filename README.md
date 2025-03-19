@@ -133,7 +133,7 @@ This will insert the content of `./page-content.html` inside the element with ID
 </html>
 ```
 ### Learn more
-<a href="https://ojiiis.github.io/oLoader-Documentation >Visit documentation page</a>
+[Visit documentation page](https://ojiiis.github.io/oLoader-Documentation)
 ## License
 
 oLoader is open-source and licensed under the MIT License.
