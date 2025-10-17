@@ -12,11 +12,10 @@ let loading = `<div id="preloader-wrapper" style="position:fixed;top:0;left:0;wi
     <div class="spinner" style="width:50px;height:50px;border:5px solid #ecf0f1;border-top-color:#3498db;border-radius:50%;animation:spin 1s linear infinite;"></div>
 </div>`;
   const getContent = async(file,at,pos)=>{
-
     let data,url;
-       try{
-          new URL(file);
-          url = file;
+      try{
+          url = new URL(file,window.location.protocol+'//'+window.location.host);
+          url = url.href;
        }catch(e){
            url = window.location.protocol+'//'+window.location.host+'/'+file;
        }
