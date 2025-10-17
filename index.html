@@ -14,7 +14,7 @@ let loading = `<div id="preloader-wrapper" style="position:fixed;top:0;left:0;wi
   const getContent = async(file,at,pos)=>{
     let data,url;
       try{
-          url = new URL(file,window.location.protocol+'//'+window.location.host);
+          url = new URL(file,window.location.href);
           url = url.href;
        }catch(e){
            url = window.location.protocol+'//'+window.location.host+'/'+file;
