@@ -1,3 +1,9 @@
+The existing documentation is well-structured and concise. To integrate the powerful, dynamic **`.put()`** method seamlessly, I will update the **"Core API Reference"** and insert a new dedicated section for **"Dynamic Element Methods"** right before **"Global Utilities."**
+
+This final structure keeps the initial static assembly separate from the subsequent dynamic injection methods.
+
+Here is the final, updated documentation:
+
 -----
 
 # 🟢 oLoader: Dynamic Content Assembler
@@ -10,6 +16,7 @@
 
   * **Runtime Assembly:** Asynchronously fetches and inserts HTML, CSS, and Scripts into the `<head>` or `<body>`.
   * **Guaranteed Script Order:** Scripts are executed sequentially, ensuring dependencies load correctly.
+  * **Dynamic Component Management:** The **`.put()`** method enables **view swapping** and seamless loading state transitions *after* initial assembly.
   * **Global Data Hydration:** The integrated `window.paint` utility provides fast, attribute-based templating.
   * **Simple Lifecycle:** Uses a single `.load(callback)` method for clean initialization and cleanup.
 
@@ -99,6 +106,10 @@ app.load(() => {
 
 ## 📚 Core API Reference
 
+The API is divided into methods for initial assembly and methods for dynamic interaction after the page is loaded.
+
+### Initial Assembly Methods
+
 | Method | Arguments | Description |
 | :--- | :--- | :--- |
 | **`oLoader()`** | *None* | Initializes and returns the assembly instance (`app`). |
@@ -107,11 +118,48 @@ app.load(() => {
 | **`app.script(file)`** | `string` | Queues a JS file for **sequential execution**. |
 | **`app.load(callback)`** | `function` | Triggers fetching and runs the `callback` when **all** assets are ready. |
 
+\<hr\>
+
+### Dynamic Element Methods
+
+These methods become available on **any HTML Element** after `app.load()` has completed. They return a `Promise` and accept an optional callback.
+
+| Method | Arguments | Description |
+| :--- | :--- | :--- |
+| **`element.put(file, [pos], [cb])`** | `string`, `string`, `function` | Asynchronously fetches content and inserts it into the element's DOM position. |
+
+#### `[position]` Argument Details for `.put()`
+
+| Value | Action | Clears Existing Content? | Use Case |
+| :--- | :--- | :--- | :--- |
+| **(Omitted or `null`)** | Replaces the element's **entire content**. | **YES** | **Seamless Loading Transition** (e.g., replacing a spinner with content). |
+| **`e`** (End/Clear) | Appends content to the end. | **YES** | **View Swapping** (replaces old view with a new one). |
+| **`E`** (End/No Clear) | Appends content to the end. | No | **Infinite Scroll/Pagination** (adding more items). |
+| **`B`** (Begin/No Clear) | Prepends content to the beginning. | No | Inserting a new item at the top (e.g., a new chat message). |
+
+```javascript
+// Example: Swapping a loading state for a final component
+const chartContainer = document.getElementById('chart-area');
+
+// 1. Show the initial spinner
+chartContainer.put('/components/spinner.html', 'e');
+
+// 2. Load the final component, implicitly replacing the spinner
+fetchChartData().then(data => {
+    chartContainer.put('/components/final-chart.html', null, (newElement) => {
+        // Use the new element to attach specific logic or data
+        paint.obj(data, newElement); 
+    });
+});
+```
+
+\<hr\>
+
 ### Global Utilities
 
 | Method | Arguments | Description |
 | :--- | :--- | :--- |
-| **`paint.obj(data)`** | `Object` | Hydrates the entire DOM using a single object (key-value mapping). |
+| **`paint.obj(data, [element])`** | `Object`, `HTMLElement` | Hydrates the DOM using a single object. If `element` is provided, it scopes the search for `.use-painter` within that element. |
 | **`paint.array(container, array)`** | `HTMLElement`, `Array` | Renders a list by cloning the container's first child for each item in the array. |
 
 -----
