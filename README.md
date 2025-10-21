@@ -128,5 +128,3 @@ We welcome contributions\! Please feel free to open issues for bug reports or fe
 
 This project is licensed under the **MIT License**.
 
-```
-```
