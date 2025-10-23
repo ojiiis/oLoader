@@ -117,7 +117,7 @@ Conditionally renders the content inside the tags.
 
 > **Security Note:** All expressions are processed via secure manual parsing. Only predefined operators are supported, and no arbitrary JavaScript code can be executed.
 
-### C. `<for exp="$item of $array">...</for>`
+### C. `<for exp="$item in $array">...</for>`
 
 Iterates over an array or object in the context variables.
 
