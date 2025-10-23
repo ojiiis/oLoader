@@ -1,130 +1,142 @@
-# 🟢 oLoader: Dynamic Content Assembler
+# oLoader: The Minimalist Client-Side Component Assembler 🧩
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub Stars](https://img.shields.io/github/stars/YOUR_USERNAME/oloader?style=social)](https://github.com/YOUR_USERNAME/oloader)
+**oLoader** is a high-performance, zero-dependency micro-framework for building modular web applications. It specializes in **structured component assembly** and **secure, declarative data-binding** without the need for a Virtual DOM or a complex runtime.
 
-**oLoader** is a lightweight, zero-dependency JavaScript module that brings modern **component management** and a **clean application lifecycle** to static HTML environments. It empowers developers to assemble content, manage dependencies, and hydrate data with minimal boilerplate and maximum performance.
+**Current Version:** 3.0 (Pure Assembler & Secure Templating)
 
----
+-----
 
-## ✨ Features
+## ✨ Features at a Glance
 
-* <strong style="color: #28a745;">Template Instantiation:</strong> The core **`app.use()`** method loads HTML files as reusable **template objects** for highly efficient list rendering and component cloning.
-* **Scoped Data Hydration:** **`element.paintObj()`** provides fast, attribute-based data binding scoped directly to a single element, preventing global data collisions.
-* **Sequential Assembly:** Guarantees all queued CSS, HTML, and Scripts load and execute in the correct order using the **`app.load()`** lifecycle.
-* **Dynamic View Management:** The **`element.put()`** method handles view swapping (clear/replace) and content appending/prepending with clear, intuitive flags.
-* **Imperative Form Handling:** **`element.ifsubmit()`** simplifies forms by preventing default submission and parsing data into a clean object.
-* **Clean Element Selection:** The global **`oG()`** utility provides concise, readable DOM querying.
+  * **Micro-Sized & Zero Dependency:** Built entirely with native JavaScript for maximum performance.
+  * **Modular Assembly:** Load external HTML files as reusable components with a single, clean API call.
+  * **Secure Templating:** Use declarative HTML tags for data (`<var>`), conditionals (`<if>`), and loops (`<for>`).
+  * **No `eval()`:** Template logic is parsed manually for enhanced security and predictability.
+  * **Built-in App Control:** Easy access to URL parameters, local storage, and navigation utilities.
 
----
+-----
 
 ## 🚀 Getting Started
 
-### 1. Installation and Script Placement
+### 1\. Setup
 
-Include `oloader.js` in the `<head>`. For best practice and reliable DOM interaction, place your main application logic (`app.js`) **just before the closing `</body>` tag**.
+Include `oloader.js` in your HTML and initialize the application.
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My oLoader App</title>
-    <script src="path/to/oloader.js"></script>
+<script src="oloader.js"></script>
+<script>
+    const app = oLoader();
     
-    </head>
-<body>
-    <div class="product-listing">Loading products...</div>
-    
-    <script src="path/to/app.js"></script> 
-</body>
-</html>
-````
-
-### 2\. Component-Based List Rendering Example (`app.use`)
-
-This pattern demonstrates the efficiency of **`app.use()`** for dynamic list generation.
-
-```javascript
-// app.js
-
-const app = oLoader();
-
-app.load(async () => {
-    // 1. Load the component as a REUSABLE master template object ONCE
-    const productCardTemplate = await app.use('components/product-card.html');
-    
-    // 2. Fetch the data
-    let response = await fetch('[https://dummyjson.com/products](https://dummyjson.com/products)');
-    let data = await response.json();
-    
-    const listingContainer = oG('.product-listing');
-
-    // 3. Loop, clone, paint, and append
-    for (const product of data.products) {
-        // CRITICAL: Clone the template object for a unique instance
-        const newCardInstance = productCardTemplate.cloneNode(true);
-        
-        // Hydrate the unique instance with product data
-        newCardInstance.paintObj(product);
-        
-        // Append the new card using the 'e' flag (End/Append)
-        newCardInstance.put(listingContainer, 'e'); 
-    }
-});
+    // Begin the main application logic here
+    app.load(() => {
+        // e.g., load the main dashboard component
+        app.use('views/dashboard.html', { user: 'Guest' }).put(oG('#app-root'));
+    });
+</script>
 ```
 
------
+### 2\. Define a Component (Example: `user-info.html`)
 
-## 📚 Core API Reference
-
-### `app` Assembly Methods
-
-| Method | Role | Usage |
-| :--- | :--- | :--- |
-| **`oLoader()`** | Initialization | `const app = oLoader();` |
-| **`app.head()`/`app.body()`**| Structure Queueing | `app.body('file.html', 'e');` |
-| **`app.script()`** | Sequential Execution | `app.script('logic.js');` |
-| **`app.use(file)`**| **Template Instantiation**| `const t = await app.use('card.html');` |
-| **`app.load(cb)`** | Lifecycle | `app.load(async () => { ... });` |
-
-### Dynamic Element Methods
-
-These methods are available on **any HTML Element** (e.g., the result of `oG('#id')`).
-
-| Method | Purpose | `put()` Position Flags |
-| :--- | :--- | :--- |
-| **`element.put(file, [pos])`**| Dynamic Content Insertion | `null` or Omitted: **Replace** (Clear content)<br>`'e'`: **Append** (End)<br>`'b'`: **Prepend** (Beginning) |
-| **`element.paintObj(data)`**| Scoped Data Hydration | *(N/A)* |
-| **`element.ifsubmit(cb)`**| Form Handling | *(N/A)* |
-
------
-
-## 🎨 Data Hydration
-
-Data binding is **scoped** to the element the method is called on and uses attributes for mapping:
-
-  * **Class:** Target elements must have `class="use-painter"`.
-  * **Attribute:** The mapping key is set by `painter-data="keyName"`.
-
-<!-- end list -->
+Components are regular HTML files using oLoader's template tags:
 
 ```html
-<div class="product-card">
-    <h3 class="use-painter" painter-data="title"></h3> 
-    <p class="use-painter" painter-data="description"></p>
-    <img class="use-painter" painter-data="thumbnail" src="">
+<div class="profile-card">
+    <h3>Hello, <var>user.name</var>!</h3>
+    
+    <if exp="$is_admin = 'true'">
+        <span class="badge">Administrator</span>
+    </if>
+    
+    <h4>Recent Activity:</h4>
+    <ul>
+        <for exp="$item of $activity_list">
+            <li>Action: <var>item.action</var> on <var>item.date</var></li>
+        </for>
+    </ul>
 </div>
 ```
 
 -----
 
-## 🤝 Contributing
+## 💻 Core API Reference
 
-We welcome contributions\! Please feel free to open issues for bug reports or feature suggestions, and submit pull requests to help improve **oLoader**.
+### 1\. `app.use(file, [variables])`
+
+Loads the component file, processes all template tags, and returns an object ready for DOM insertion.
+
+```javascript
+const userData = {
+    user: { name: "Alice", is_admin: 'true' },
+    activity_list: [{ action: "Login", date: "Today" }, { action: "Post", date: "Yesterday" }]
+};
+
+// 1. Load the file and prepare the component data
+const userComponent = await app.use('components/user-info.html', userData);
+```
+
+### 2\. `element.put(content, [pos], [variables], [callback])`
+
+The main method for DOM insertion, available on any element retrieved via `oG()` or created via `app.use()`.
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `content` | Link/Text/Object | N/A | Component path, raw HTML string, or HTML Object. |
+| `pos` | `string` | `null` | **Position:** `'b'` (beginning), `'e'` (end), `null` (replace inner HTML). |
+| `variables` | `object` | `{}` | **Optional:** Variables to inject into the template during insertion. |
+| `callback` | `function` | `undefined` | Executes after insertion, receiving the newly inserted element. |
+
+```javascript
+// 2. Insert the component into the DOM
+userComponent.put(oG('#sidebar'), 'b', {}, (insertedElement) => {
+    console.log("Component fully rendered and inserted.");
+    // Add custom event listeners here
+});
+```
 
 -----
 
-## 📜 License
+## 🌐 Templating Syntax Details
 
-This project is licensed under the **MIT License**.
+### A. `<var>variable name</var>`
 
+Replaced by the corresponding value from the merged `variables` object.
+
+| Syntax | Description |
+| :--- | :--- |
+| `<var>user.name</var>` | Accesses nested properties (e.g., `variables.user.name`). |
+| `<var>tag</var>` | Used inside a loop to access the current iteration item. |
+
+### B. `<if exp="expression">...</if>`
+
+Conditionally renders the content inside the tags.
+
+| Syntax | Description |
+| :--- | :--- |
+| `<if exp="$status = 'admin'">` | **Equality:** Checks if the variable `$status` is equal to the literal string `'admin'`. |
+| `<if exp="$count > 10">` | **Comparison:** Supports numerical comparisons (`>`, `<`, `>=`, `<=`). |
+
+> **Security Note:** All expressions are processed via secure manual parsing. Only predefined operators are supported, and no arbitrary JavaScript code can be executed.
+
+### C. `<for exp="$item of $array">...</for>`
+
+Iterates over an array or object in the context variables.
+
+| Syntax | Description |
+| :--- | :--- |
+| `<for exp="$item of $tags">` | `$item` is the loop variable; `$tags` is the array/object from the context. |
+| `<var>item.name</var>` | Accessing properties of the current loop item. |
+
+-----
+
+## 🌍 Application Utilities (App Control)
+
+The `app` instance provides direct helpers for common browser functions, streamlining application logic.
+
+| Property/Method | Usage |
+| :--- | :--- |
+| `app.query` | `const id = app.query.user_id;` (URL query parameters as an object) |
+| `app.location` | `console.log(app.location.href);` |
+| `app.storage` | `app.storage.setItem('key', 'value');` (Alias for `window.localStorage`) |
+| `app.path` | `if (app.path === '/home') { ... }` |
+| `app.host` | `console.log(app.host);` |
+| `app.navigate(link)` | `app.navigate('/new-page');` (Programmatic navigation) |
