@@ -28,9 +28,10 @@ Include `oloader.js` in your HTML and initialize the application.
     const app = oLoader();
     
     // Begin the main application logic here
-    app.load(() => {
-        // e.g., load the main dashboard component
-        app.use('views/dashboard.html', { user: 'Guest' }).put(oG('#app-root'));
+    app.load(async () => {
+        // Example: load the main dashboard component
+        let dashboard = await app.use('views/dashboard.html', { user: 'Guest' });
+        oG('#app-root').put(dashboard)
     });
 </script>
 ```
@@ -43,13 +44,13 @@ Components are regular HTML files using oLoader's template tags:
 <div class="profile-card">
     <h3>Hello, <var>user.name</var>!</h3>
     
-    <if exp="$is_admin = 'true'">
+    <if exp="$is_admin = true">
         <span class="badge">Administrator</span>
     </if>
     
     <h4>Recent Activity:</h4>
     <ul>
-        <for exp="$item of $activity_list">
+        <for exp="$item in $activity_list">
             <li>Action: <var>item.action</var> on <var>item.date</var></li>
         </for>
     </ul>
@@ -66,7 +67,7 @@ Loads the component file, processes all template tags, and returns an object rea
 
 ```javascript
 const userData = {
-    user: { name: "Alice", is_admin: 'true' },
+    user: { name: "Alice", is_admin: true }, // Boolean value is unquoted here too
     activity_list: [{ action: "Login", date: "Today" }, { action: "Post", date: "Yesterday" }]
 };
 
@@ -106,25 +107,28 @@ Replaced by the corresponding value from the merged `variables` object.
 | `<var>user.name</var>` | Accesses nested properties (e.g., `variables.user.name`). |
 | `<var>tag</var>` | Used inside a loop to access the current iteration item. |
 
-### B. `<if exp="expression">...</if>`
+### B. `<if exp="expression">...</if>` (Conditional Blocks)
 
 Conditionally renders the content inside the tags.
 
-| Syntax | Description |
-| :--- | :--- |
-| `<if exp="$status = 'admin'">` | **Equality:** Checks if the variable `$status` is equal to the literal string `'admin'`. |
-| `<if exp="$count > 10">` | **Comparison:** Supports numerical comparisons (`>`, `<`, `>=`, `<=`). |
+| Syntax | Example | Description |
+| :--- | :--- | :--- |
+| **Boolean Values** | `<if exp="$is_admin = true">` | Checks if the variable `$is_admin` is equal to the **boolean value** `true` or `false`. **Do not use quotes.** |
+| **String Values** | `<if exp="$status = 'admin'">` | Checks if the variable `$status` is equal to the **literal string** `'admin'`. Quotes are required for strings. |
+| **Comparison** | `<if exp="$count > 100">` | Supports numerical comparisons (`>`, `<`, `>=`, `<=`). Numbers are unquoted. |
 
-> **Security Note:** All expressions are processed via secure manual parsing. Only predefined operators are supported, and no arbitrary JavaScript code can be executed.
+> **Security Note:** All expressions are processed via secure manual parsing. Only predefined operators and the specified literal formats are supported, and no arbitrary JavaScript code can be executed.
 
-### C. `<for exp="$item in $array">...</for>`
+### C. `<for exp="$item in $array">...</for>` (Iteration)
 
-Iterates over an array or object in the context variables.
+This tag is used to iterate over the items or keys of an array or object provided in the component's `variables` object.
 
-| Syntax | Description |
-| :--- | :--- |
-| `<for exp="$item of $tags">` | `$item` is the loop variable; `$tags` is the array/object from the context. |
-| `<var>item.name</var>` | Accessing properties of the current loop item. |
+| Syntax | Example | Description |
+| :--- | :--- | :--- |
+| **`in` Keyword** | `<for exp="$item in $tags">` | `$item` is the loop variable; **`$tags` is the array/object from the context.** |
+| Access Item | `<var>item.name</var>` | Accessing properties of the current loop item. |
+
+> **Note on Syntax:** **oLoader** strictly supports the **`... in ...`** syntax for iteration. The variable assigned to `$item` will represent either the **index/key** (if iterating an array/object) or the **value** of the item being iterated, depending on the internal parser's design.
 
 -----
 
